@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (required)
-import Html.Attributes exposing (placeholder)
+import Html.Attributes exposing (placeholder,style)
 import Html.Events exposing (onInput)
 import Random
 
@@ -40,7 +40,7 @@ init _=({liste=[],worderr=Loading,dicerr=Waiting,nb=3,dic={word="",meanings=[]},
 
 getNicknames : Cmd Msg
 getNicknames =Http.get 
-            {url ="http://localhost:8000/Documents/GitHub/elp-elm/static/1000.txt",
+            {url ="http://localhost:8000/static/1000.txt",
             expect = Http.expectString WordsReceived 
             }
 
@@ -128,10 +128,10 @@ test l= case  List.head  l of
 view : Model -> Html Msg
 view model =
     div []
-        [h1 [] [text "Find the wordaaaa"]
+        [h1 [] [text "Find the word"]
         ,viewDefsOrError model
         
-        --,viewNicknames model
+        --,viewWords model
         ]
 
 viewDefsOrError : Model -> Html Msg
@@ -140,16 +140,16 @@ viewDefsOrError model =
         Error message ->
             viewError message "word"
         Done->case model.dicerr of
-            Error message->div[][viewError message "def",viewNickname model.dic.word]
+            Error message->div[][viewError message "def",viewWord model.dic.word]
                         
             Done->if model.win then 
-                        li[] [viewNickname model.dic.word,
+                        div[][viewWord model.dic.word,
                         ol [](viewDic model.dic.meanings)
-                        ,viewInput model
+                        ,viewInput
                         ,viewWin model.dic.word]
-                    else li[] [viewNickname model.dic.word,
+                    else div[] [{-viewWord model.dic.word,-}
                         ol [](viewDic model.dic.meanings)
-                        ,viewInput model]
+                        ,viewInput]
             Loading-> li[] [text "definition Loading"]
             Waiting-> li[] [text "defintition Waiting"]
         Loading-> li[] [text "word Loading"]
@@ -157,7 +157,8 @@ viewDefsOrError model =
             
 
 viewWin:String->Html Msg
-viewWin s=text ("You found the word,it was "++s)
+viewWin s=li[style "position" "relative", style "top" (String.fromInt 10 ++ "px"),
+     style "left" (String.fromInt 10 ++ "px")] [text ("You found the word,it was "++s)]
 viewError: String ->String-> Html Msg
 viewError err a=div[]
         [ h3 [] [text "Error encountered"  ]
@@ -180,14 +181,14 @@ viewDef def= case def.definition of
             ""->text "pas de def chacal"
             _->text def.definition
             
-viewNicknames:Model ->Html Msg
-viewNicknames m=ul[](List.map viewNickname m.liste)
-viewNickname : String -> Html Msg
-viewNickname s= li[][text s ] 
+
+viewWord : String -> Html Msg
+viewWord s= li[][text s ] 
 --(url++m.dic.word)
 
-viewInput :  Model -> Html Msg
-viewInput model= input [ placeholder "Guess the word", onInput Change ] []
+viewInput :   Html Msg
+viewInput = input [ style "position" "relative", style "top" (String.fromInt 10 ++ "px"),
+     style "left" (String.fromInt 10 ++ "px"),placeholder "Guess the word", onInput Change ] []
 
 
 

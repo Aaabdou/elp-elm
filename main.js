@@ -6204,7 +6204,7 @@ var $elm$http$Http$get = function (r) {
 var $author$project$Main$getNicknames = $elm$http$Http$get(
 	{
 		expect: $elm$http$Http$expectString($author$project$Main$WordsReceived),
-		url: 'http://localhost:8000/Documents/GitHub/elp-elm/static/1000.txt'
+		url: 'http://localhost:8000/static/1000.txt'
 	});
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
@@ -6414,12 +6414,11 @@ var $author$project$Main$dicDecoder = A3(
 		$elm$json$Json$Decode$string,
 		$elm$json$Json$Decode$succeed($author$project$Main$Dictionary)));
 var $author$project$Main$gDecoder = $elm$json$Json$Decode$list($author$project$Main$dicDecoder);
-var $author$project$Main$url = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
-var $author$project$Main$getDef = function (m) {
+var $author$project$Main$getDef = function (s) {
 	return $elm$http$Http$get(
 		{
 			expect: A2($elm$http$Http$expectJson, $author$project$Main$DataReceived, $author$project$Main$gDecoder),
-			url: _Utils_ap($author$project$Main$url, m.dic.word)
+			url: 'https://api.dictionaryapi.dev/api/v2/entries/en/' + s
 		});
 };
 var $elm$core$List$drop = F2(
@@ -6593,29 +6592,6 @@ var $author$project$Main$update = F2(
 						worderr: model.worderr
 					},
 					$elm$core$Platform$Cmd$none);
-			case 'WordFound':
-				var y = msg.a;
-				return _Utils_Tuple2(
-					{
-						dic: {meanings: _List_Nil, word: y},
-						dicerr: $author$project$Main$Loading,
-						liste: model.liste,
-						nb: model.nb,
-						win: false,
-						worderr: $author$project$Main$Done
-					},
-					$author$project$Main$getDef(model));
-			case 'WordNotFound':
-				return _Utils_Tuple2(
-					{
-						dic: {meanings: _List_Nil, word: ''},
-						dicerr: $author$project$Main$Loading,
-						liste: model.liste,
-						nb: model.nb,
-						win: false,
-						worderr: $author$project$Main$Error('Couldn\'t find word')
-					},
-					$elm$core$Platform$Cmd$none);
 			default:
 				var y = msg.a;
 				var z = A2($author$project$Main$getWord, model.liste, y);
@@ -6640,7 +6616,7 @@ var $author$project$Main$update = F2(
 							win: false,
 							worderr: $author$project$Main$Done
 						},
-						$author$project$Main$getDef(model));
+						$author$project$Main$getDef(z));
 				}
 		}
 	});
@@ -6699,22 +6675,23 @@ var $author$project$Main$viewDic = function (meanings) {
 	}
 };
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
-var $author$project$Main$viewError = function (err) {
-	return A2(
-		$elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$h3,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Error encountered')
-					])),
-				$elm$html$Html$text('Error: ' + err)
-			]));
-};
+var $author$project$Main$viewError = F2(
+	function (err, a) {
+		return A2(
+			$elm$html$Html$div,
+			_List_Nil,
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$h3,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Error encountered')
+						])),
+					$elm$html$Html$text('Error ' + (a + (' : ' + err)))
+				]));
+	});
 var $author$project$Main$Change = function (a) {
 	return {$: 'Change', a: a};
 };
@@ -6760,31 +6737,88 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $author$project$Main$viewInput = function (model) {
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $author$project$Main$viewInput = A2(
+	$elm$html$Html$input,
+	_List_fromArray(
+		[
+			A2($elm$html$Html$Attributes$style, 'position', 'relative'),
+			A2(
+			$elm$html$Html$Attributes$style,
+			'top',
+			$elm$core$String$fromInt(10) + 'px'),
+			A2(
+			$elm$html$Html$Attributes$style,
+			'left',
+			$elm$core$String$fromInt(10) + 'px'),
+			$elm$html$Html$Attributes$placeholder('Guess the word'),
+			$elm$html$Html$Events$onInput($author$project$Main$Change)
+		]),
+	_List_Nil);
+var $author$project$Main$viewWin = function (s) {
 	return A2(
-		$elm$html$Html$input,
+		$elm$html$Html$li,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$placeholder('Guess the word'),
-				$elm$html$Html$Events$onInput($author$project$Main$Change)
+				A2($elm$html$Html$Attributes$style, 'position', 'relative'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'top',
+				$elm$core$String$fromInt(10) + 'px'),
+				A2(
+				$elm$html$Html$Attributes$style,
+				'left',
+				$elm$core$String$fromInt(10) + 'px')
 			]),
-		_List_Nil);
+		_List_fromArray(
+			[
+				$elm$html$Html$text('You found the word,it was ' + s)
+			]));
+};
+var $author$project$Main$viewWord = function (s) {
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				$elm$html$Html$text(s)
+			]));
 };
 var $author$project$Main$viewDefsOrError = function (model) {
 	var _v0 = model.worderr;
 	switch (_v0.$) {
 		case 'Error':
 			var message = _v0.a;
-			return $author$project$Main$viewError(message);
+			return A2($author$project$Main$viewError, message, 'word');
 		case 'Done':
 			var _v1 = model.dicerr;
 			switch (_v1.$) {
 				case 'Error':
 					var message = _v1.a;
-					return $author$project$Main$viewError(message);
-				case 'Done':
 					return A2(
-						$elm$html$Html$li,
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2($author$project$Main$viewError, message, 'def'),
+								$author$project$Main$viewWord(model.dic.word)
+							]));
+				case 'Done':
+					return model.win ? A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$author$project$Main$viewWord(model.dic.word),
+								A2(
+								$elm$html$Html$ol,
+								_List_Nil,
+								$author$project$Main$viewDic(model.dic.meanings)),
+								$author$project$Main$viewInput,
+								$author$project$Main$viewWin(model.dic.word)
+							])) : A2(
+						$elm$html$Html$div,
 						_List_Nil,
 						_List_fromArray(
 							[
@@ -6792,7 +6826,7 @@ var $author$project$Main$viewDefsOrError = function (model) {
 								$elm$html$Html$ol,
 								_List_Nil,
 								$author$project$Main$viewDic(model.dic.meanings)),
-								$author$project$Main$viewInput(model)
+								$author$project$Main$viewInput
 							]));
 				case 'Loading':
 					return A2(
@@ -6829,22 +6863,6 @@ var $author$project$Main$viewDefsOrError = function (model) {
 					]));
 	}
 };
-var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$Main$viewNickname = function (s) {
-	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$elm$html$Html$text(s)
-			]));
-};
-var $author$project$Main$viewNicknames = function (m) {
-	return A2(
-		$elm$html$Html$ul,
-		_List_Nil,
-		A2($elm$core$List$map, $author$project$Main$viewNickname, m.liste));
-};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -6856,10 +6874,9 @@ var $author$project$Main$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Find the wordaaaa')
+						$elm$html$Html$text('Find the word')
 					])),
-				$author$project$Main$viewDefsOrError(model),
-				$author$project$Main$viewNicknames(model)
+				$author$project$Main$viewDefsOrError(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
