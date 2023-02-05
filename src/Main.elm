@@ -157,7 +157,7 @@ viewDefsOrError model =
             
 
 viewWin:String->Html Msg
-viewWin s=li[style "position" "relative", style "top" (String.fromInt 10 ++ "px"),
+viewWin s=div[style "position" "relative", style "top" (String.fromInt 10 ++ "px"),
      style "left" (String.fromInt 10 ++ "px")] [text ("You found the word,it was "++s)]
 viewError: String ->String-> Html Msg
 viewError err a=div[]
