@@ -188,7 +188,7 @@ viewWord s= li[][text s ]
 
 viewInput :   Html Msg
 viewInput = input [ style "position" "relative", style "top" (String.fromInt 10 ++ "px"),
-     style "left" (String.fromInt 10 ++ "px"),placeholder "Guess the word", onInput Change ] []
+     style "left" (String.fromInt 10 ++ "px"),placeholder "Guess the word here", onInput Change ] []
 
 
 
