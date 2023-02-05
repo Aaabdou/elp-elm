@@ -6752,13 +6752,13 @@ var $author$project$Main$viewInput = A2(
 			$elm$html$Html$Attributes$style,
 			'left',
 			$elm$core$String$fromInt(10) + 'px'),
-			$elm$html$Html$Attributes$placeholder('Guess the word'),
+			$elm$html$Html$Attributes$placeholder('Guess the word here'),
 			$elm$html$Html$Events$onInput($author$project$Main$Change)
 		]),
 	_List_Nil);
 var $author$project$Main$viewWin = function (s) {
 	return A2(
-		$elm$html$Html$li,
+		$elm$html$Html$div,
 		_List_fromArray(
 			[
 				A2($elm$html$Html$Attributes$style, 'position', 'relative'),
